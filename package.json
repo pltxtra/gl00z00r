@@ -1,5 +1,6 @@
 {
-  "name": "gl00z00r",
+    "homepage" : "/app",
+    "name": "gl00z00r",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
