@@ -19,6 +19,8 @@ class App extends Component {
         super(props);
 
         this.toggle = this.toggle.bind(this);
+        this.sayWord = this.sayWord.bind(this);
+        this.restartTest = this.restartTest.bind(this);
         this.listenToWord = this.listenToWord.bind(this);
         this.validateWord = this.validateWord.bind(this);
         this.beginTest = this.beginTest.bind(this);
@@ -50,6 +52,12 @@ class App extends Component {
         });
     }
 
+    restartTest() {
+        this.setState({
+            mode: "starting"
+        });
+    }
+
     wordsChange(event) {
 	this.setState({words: event.target.value});
     }
@@ -58,16 +66,34 @@ class App extends Component {
 	this.setState({answer: event.target.value});
     }
 
+    sayWord(text, lang) {
+	var sound = new Audio('tts?text=' + encodeURI(text) + '&lang=' + encodeURI(lang))
+	sound.play()
+    }
+
     listenToWord() {
 	// The text to synthesize
 	console.log("listenToWord")
-	var sound = new Audio('tts?text=valuable&lang=en')
-	sound.play()
+	this.sayWord(this.state.hint, this.state.lang)
     }
 
     validateWord() {
 	// The text to synthesize
 	console.log("validateWord")
+	var completed_words = new Map(this.state.completed_words)
+	var all_words = new Map(this.state.all_words)
+	if (this.state.answer === this.state.actual_word) {
+	    this.sayWord("bra", "sv")
+	    completed_words.set(this.state.actual_word, this.state.actual_value)
+	} else {
+	    this.sayWord("oops!", "en")
+	    all_words.set(this.state.actual_word, this.state.actual_value)
+	}
+	this.setState({
+	    all_words: all_words,
+	    completed_words: completed_words,
+	    mode: "validating"
+	    })
     }
 
     beginTest() {
@@ -76,7 +102,13 @@ class App extends Component {
 	var all_words = new Map(this.state.all_words)
 	for (var l_index in lines) {
 	    var key, value
-	    const key_and_value = lines[l_index].split('=')
+	    const line = lines[l_index].trim()
+
+	    if (line === "") {
+		continue
+	    }
+
+	    const key_and_value = line.split('=')
 	    if (key_and_value.length > 1) {
 		key = key_and_value[0].trim().toLowerCase()
 		value = key_and_value[1].trim().toLowerCase()
@@ -86,10 +118,14 @@ class App extends Component {
 	    } else {
 		continue
 	    }
-	    all_words[key] = value
-	    console.log("key " + key + " value " + value)
+	    all_words.set(key, value)
+	    console.log("<<<<>>>> key " + key + " value " + value + " ---> " + all_words.get(key))
 	}
 	console.log("beginTest() will call nextWord...")
+	console.log(" *** all words " + all_words.size)
+	for (var key1 of all_words.keys()) {
+	    console.log(" -- " + key1 + " => " + all_words.get(key1))
+	}
 	this.nextWord(all_words, new Map())
 	console.log("beginTest() will return...")
     }
@@ -126,12 +162,21 @@ class App extends Component {
 	console.log("getNewWord()")
 	var word_list = new Map(from_completed ? completed_words : all_words)
 
-	if (word_list.length <= 0) {
+	console.log(" --- all words " + all_words.size)
+	for (var key1 of all_words.keys()) {
+	    console.log(key1 + " => " + all_words.get(key1))
+	}
+	console.log(" --- completed words " + completed_words.size)
+	for (var key2 of completed_words.keys()) {
+	    console.log(key2 + " => " + completed_words.get(key2))
+	}
+
+	if (word_list.size <= 0) {
 	    console.log("Word list is empty..")
 	    return false
 	}
 
-	const indx = Math.floor((Math.random() * word_list.length));
+	const indx = Math.floor((Math.random() * word_list.size));
 	const use_key_as_hint = Math.random() > 0.5 ? true : false
 
 	var actual_word = ""
@@ -139,16 +184,18 @@ class App extends Component {
 	var hint = ""
 	var lang = ""
 	var k = 0
-	console.log("Word list is " + word_list.length + " elements")
-	for (var w in word_list) {
+	console.log("Word list is " + word_list.size + " elements")
+	for (var w of word_list.keys()) {
 	    console.log("W is " + w + " k is " + k + " indx = " + indx)
 	    if (k === indx) {
 		actual_word = w
-		actual_value = word_list[w]
+		actual_value = word_list.get(w)
 		if (use_key_as_hint) {
+		    console.log("hint is actual word: " + actual_word)
 		    hint = actual_word
 		    lang = "es"
 		} else {
+		    console.log("hint is actual value: " + actual_value)
 		    hint = actual_value
 		    lang = "sv"
 		}

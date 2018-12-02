@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from flask import Flask, send_from_directory, send_file, request
 from gtts import gTTS
 import tempfile, os
@@ -23,3 +24,5 @@ def tts():
     print("tts_file name: {}".format(tts_file.name))
     tts.save(tts_file.name)
     return send_file(tts_file.name)
+
+app.run(host='0.0.0.0')
