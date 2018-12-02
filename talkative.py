@@ -18,8 +18,13 @@ def root():
 def tts():
     text = request.args.get('text', '')
     lang = request.args.get('lang', '')
+    slow = request.args.get('slow', '')
+    if slow == "true":
+        do_slow = True
+    else:
+        do_slow = False
     print("text={}, lang={}".format(text, lang))
-    tts = gTTS(text=text, lang=lang)
+    tts = gTTS(text=text, lang=lang, slow = do_slow)
     tts_file = tempfile.NamedTemporaryFile(dir="build")
     print("tts_file name: {}".format(tts_file.name))
     tts.save(tts_file.name)

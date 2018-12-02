@@ -67,7 +67,8 @@ class App extends Component {
     }
 
     sayWord(text, lang) {
-	var sound = new Audio('tts?text=' + encodeURI(text) + '&lang=' + encodeURI(lang))
+	const do_slow = Math.random() > 0.5 ? "true" : "false"
+	var sound = new Audio('tts?text=' + encodeURI(text) + '&lang=' + encodeURI(lang) + '&slow=' + encodeURI(do_slow))
 	sound.play()
     }
 
@@ -118,7 +119,8 @@ class App extends Component {
 	    } else {
 		continue
 	    }
-	    all_words.set(key, value)
+	    all_words.set(key, {hint: value, lang: "sv"})
+	    all_words.set(value, {hint: key, lang: "es"})
 	    console.log("<<<<>>>> key " + key + " value " + value + " ---> " + all_words.get(key))
 	}
 	console.log("beginTest() will call nextWord...")
@@ -177,7 +179,6 @@ class App extends Component {
 	}
 
 	const indx = Math.floor((Math.random() * word_list.size));
-	const use_key_as_hint = Math.random() > 0.5 ? true : false
 
 	var actual_word = ""
 	var actual_value = ""
@@ -190,15 +191,10 @@ class App extends Component {
 	    if (k === indx) {
 		actual_word = w
 		actual_value = word_list.get(w)
-		if (use_key_as_hint) {
-		    console.log("hint is actual word: " + actual_word)
-		    hint = actual_word
-		    lang = "es"
-		} else {
-		    console.log("hint is actual value: " + actual_value)
-		    hint = actual_value
-		    lang = "sv"
-		}
+
+		console.log("hint is actual word: " + actual_word)
+		hint = actual_value.hint
+		lang = actual_value.lang
 	    }
 	    k = k + 1
 	}
