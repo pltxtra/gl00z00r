@@ -30,6 +30,8 @@ class App extends Component {
         this.renderTesting = this.renderTesting.bind(this);
         this.renderCompleted = this.renderCompleted.bind(this);
         this.wordsChange = this.wordsChange.bind(this);
+        this.changeLeftLang = this.changeLeftLang.bind(this);
+        this.changeRightLang = this.changeRightLang.bind(this);
         this.answerChange = this.answerChange.bind(this);
         this.state = {
 	    mode: "starting",
@@ -41,7 +43,9 @@ class App extends Component {
 	    answer: "",
 	    actual_value: "",
 	    hint: "hello",
-	    lang: "sv"
+	    lang: "sv",
+	    leftLang: "en",
+	    rightLang: "sv"
         };
     }
 
@@ -53,6 +57,14 @@ class App extends Component {
 
     wordsChange(event) {
 	this.setState({words: event.target.value});
+    }
+
+    changeLeftLang(event) {
+	this.setState({leftLang: event.target.value});
+    }
+
+    changeRightLang(event) {
+	this.setState({rightLang: event.target.value});
     }
 
     answerChange(event) {
@@ -112,8 +124,8 @@ class App extends Component {
 	    } else {
 		continue
 	    }
-	    all_words.set(key, {hint: value, lang: "sv"})
-	    all_words.set(value, {hint: key, lang: "es"})
+	    all_words.set(key, {hint: value, lang: this.state.rightLang})
+	    all_words.set(value, {hint: key, lang: this.state.leftLang})
 	    console.log("<<<<>>>> key " + key + " value " + value + " ---> " + all_words.get(key))
 	}
 	console.log("beginTest() will call nextWord...")
@@ -227,6 +239,14 @@ class App extends Component {
 	return (
 	    <Row>
             <Col>
+	    <label>
+		Skriv språket till vänster (en för engelska, es för spanska):
+		<textarea value={this.state.leftLang} onChange={this.changeLeftLang} />
+            </label>
+	    <label>
+		Skriv språket till höger (en för engelska, es för spanska):
+		<textarea value={this.state.rightLang} onChange={this.changeRightLang} />
+            </label>
 	    <label>
             Skriv orden här:
             <textarea value={this.state.words} onChange={this.wordsChange} />
