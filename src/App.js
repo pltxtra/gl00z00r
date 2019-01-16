@@ -88,7 +88,7 @@ class App extends Component {
 	console.log("validateWord")
 	var completed_words = new Map(this.state.completed_words)
 	var all_words = new Map(this.state.all_words)
-	if (this.state.answer === this.state.actual_word) {
+	if (this.state.answer.trim().toLowerCase() === this.state.actual_word) {
 	    this.sayWord("bra", "sv")
 	    completed_words.set(this.state.actual_word, this.state.actual_value)
 	} else {
