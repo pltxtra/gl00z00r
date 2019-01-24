@@ -273,7 +273,8 @@ class App extends Component {
             <Col>
 	    <label>
             Skriv svaret här:
-	    <input
+		<input
+	    spellCheck={false}
             style={{height: 40, borderColor: 'gray', borderWidth: 1}}
             onChange={this.answerChange}
             value={this.state.answer}
